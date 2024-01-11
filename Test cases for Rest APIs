@@ -1,0 +1,47 @@
+import unittest
+import json
+from your_flask_app import app, grade_book
+
+class TestFlaskApp(unittest.TestCase):
+
+    def setUp(self):
+        app.testing = True
+        self.app = app.test_client()
+
+    def test_add_teacher(self):
+        data = {
+            "teacher_id": "T123",
+            "name": "John Doe"
+        }
+        response = self.app.post('/add_teacher', json=data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data.decode('utf-8'), "Teacher added successfully.")
+
+    def test_upload_results(self):
+        data = {
+            "teacher_id": "T123",
+            "student_id": "S456",
+            "subject": "Math",
+            "score": 90
+        }
+        response = self.app.post('/upload_results', json=data)
+        result = json.loads(response.data.decode('utf-8'))
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("message", result)
+        self.assertEqual(result["message"], "Results uploaded successfully.")
+
+    def test_approve_results(self):
+        data = {
+            "teacher_id": "T123",
+            "student_id": "S456",
+            "subject": "Math"
+        }
+        response = self.app.post('/approve_results', json=data)
+        result = json.loads(response.data.decode('utf-8'))
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("message", result)
+        self.assertEqual(result["message"], "Results approved successfully.")
+
+    def test_get_teacher_names(self):
+        response = self.app.get('/get_teacher_names')
+        result = json.loads(response.data.decode('utf-8'))
