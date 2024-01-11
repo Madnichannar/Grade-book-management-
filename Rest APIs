@@ -1,0 +1,43 @@
+from flask import Flask, request, jsonify
+
+app = Flask(_name_)
+grade_book = GradeBook()
+
+# Endpoint to add a teacher
+@app.route('/add_teacher', methods=['POST'])
+def add_teacher():
+    data = request.get_json()
+    teacher_id = data['teacher_id']
+    name = data['name']
+    grade_book.add_teacher(teacher_id, name)
+    return "Teacher added successfully."
+
+# Endpoint to upload results
+@app.route('/upload_results', methods=['POST'])
+def upload_results():
+    data = request.get_json()
+    teacher_id = data['teacher_id']
+    student_id = data['student_id']
+    subject = data['subject']
+    score = data['score']
+    response = grade_book.upload_results(teacher_id, student_id, subject, score)
+    return jsonify({"message": response})
+
+# Endpoint to approve results
+@app.route('/approve_results', methods=['POST'])
+def approve_results():
+    data = request.get_json()
+    teacher_id = data['teacher_id']
+    student_id = data['student_id']
+    subject = data['subject']
+    response = grade_book.approve_results(teacher_id, student_id, subject)
+    return jsonify({"message": response})
+
+# Endpoint to get teacher names
+@app.route('/get_teacher_names', methods=['GET'])
+def get_teacher_names():
+    teacher_names = list(grade_book.get_teacher_names())
+    return jsonify({"teacher_names": teacher_names})
+
+if _name_ == '_main_':
+    app.run(debug=True)
